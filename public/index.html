@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Inscription MGC</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              lemon: {
+                300: "#fde047",
+                400: "#facc15",
+                500: "#eab308",
+                900: "#713f12",
+              },
+            },
+            animation: {
+              blob: "blob 7s infinite",
+              "fade-in-up": "fadeInUp 0.6s ease-out forwards",
+              shimmer: "shimmer 2s linear infinite",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        -webkit-tap-highlight-color: transparent;
+      }
+      .input-glass {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+      .input-glass:focus {
+        background: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(250, 204, 21, 0.25);
+        border-color: #facc15;
+      }
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-gray-900 antialiased pb-32 relative overflow-x-hidden min-h-screen"
+  >
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute top-0 left-1/4 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"
+      ></div>
+      <div
+        class="absolute top-0 right-1/4 w-96 h-96 bg-yellow-100 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"
+      ></div>
+      <div
+        class="absolute -bottom-32 left-1/3 w-96 h-96 bg-yellow-50 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"
+      ></div>
+    </div>
+
+    <div class="relative z-10 px-4 pt-6">
+      <header class="text-center mb-8">
+        <h1 class="text-3xl font-black tracking-tighter text-gray-900">
+          Inscription
+        </h1>
+        <p class="text-sm font-medium text-gray-500 mt-1">
+          Nouveau dossier élève
+        </p>
+      </header>
+
+      <div class="max-w-lg mx-auto space-y-6">
+        <div class="relative group">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-2xl opacity-40 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 blur"
+          ></div>
+          <div
+            class="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-yellow-400/20"
+          >
+            <div
+              class="flex items-center mb-4 text-xs font-bold uppercase tracking-wider text-yellow-600"
+            >
+              <span class="text-lg mr-2">👤</span> L'Élève
+            </div>
+
+            <div class="space-y-5">
+              <div id="grp-nom">
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                  >NOM COMPLET *</label
+                >
+                <input
+                  type="text"
+                  id="nomComplet"
+                  placeholder="Ex: Razafimahandry Vahiny"
+                  class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-semibold placeholder-gray-400 text-gray-900"
+                  oninput="clearError()"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >TÉLÉPHONE</label
+                  >
+                  <input
+                    type="tel"
+                    id="telephone"
+                    placeholder="034..."
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >NAISSANCE</label
+                  >
+                  <input
+                    type="date"
+                    id="dateNaissance"
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                  >ADRESSE / VILLE</label
+                >
+                <input
+                  type="text"
+                  id="adresse"
+                  placeholder="Analakely..."
+                  class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >ÉGLISE</label
+                  >
+                  <input
+                    type="text"
+                    id="eglise"
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >PROFESSION</label
+                  >
+                  <input
+                    type="text"
+                    id="profession"
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-2 ml-1"
+                  >OPTION</label
+                >
+                <div
+                  class="bg-yellow-50 p-1.5 rounded-full flex relative border border-yellow-100"
+                >
+                  <div
+                    id="capsule-bg"
+                    class="absolute left-1.5 top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-md transition-all duration-300 ease-out z-0"
+                  ></div>
+                  <button
+                    onclick="selectOption('Journalier', 0)"
+                    id="btn-0"
+                    class="flex-1 py-3 text-sm font-bold z-10 text-yellow-900 transition-colors"
+                  >
+                    Journalier
+                  </button>
+                  <button
+                    onclick="selectOption('Weekend', 1)"
+                    id="btn-1"
+                    class="flex-1 py-3 text-sm font-bold z-10 text-gray-500 transition-colors"
+                  >
+                    Weekend
+                  </button>
+                </div>
+                <input type="hidden" id="optionSelected" value="Journalier" />
+              </div>
+              <button
+                type="button"
+                onclick="checkDuplicates()"
+                id="btn-check"
+                class="w-full flex justify-center items-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95 bg-yellow-50 text-yellow-800 border border-yellow-200 hover:bg-yellow-100 hover:border-yellow-300"
+              >
+                <span id="check-text">Check doublons</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative group">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-200 rounded-2xl opacity-40 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 blur"
+          ></div>
+          <div
+            class="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-yellow-400/20"
+          >
+            <div
+              class="flex items-center mb-4 text-xs font-bold uppercase tracking-wider text-yellow-600"
+            >
+              <span class="text-lg mr-2">🌳</span> Tree
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                  >ID SMADA</label
+                >
+                <input
+                  type="text"
+                  id="idApp"
+                  placeholder="APP-001"
+                  class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-mono text-sm text-gray-900"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                  >NOM TREE</label
+                >
+                <input
+                  type="text"
+                  id="nomTree"
+                  class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >TEL TREE</label
+                  >
+                  <input
+                    type="tel"
+                    id="telTree"
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                    >LIAISON</label
+                  >
+                  <input
+                    type="text"
+                    id="liaison"
+                    placeholder="Namana,..."
+                    class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1"
+                  >DEPARTEMENT/CLASSE</label
+                >
+                <input
+                  type="text"
+                  id="departement"
+                  class="input-glass w-full border border-gray-200 rounded-xl px-4 py-3.5 outline-none font-medium text-gray-900"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="fixed bottom-0 left-0 right-0 p-4 pt-12 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent z-40"
+    >
+      <button
+        id="main-btn"
+        onclick="submitForm()"
+        class="relative w-full bg-gradient-to-r from-lemon-400 to-lemon-500 text-gray-900 font-bold text-lg py-4 rounded-2xl shadow-lg shadow-yellow-400/40 active:scale-[0.98] transition-transform overflow-hidden group"
+      >
+        <div
+          class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer group-hover:animate-none"
+        ></div>
+        <div class="relative flex justify-center items-center">
+          <span
+            id="spinner"
+            class="animate-spin h-5 w-5 border-2 border-gray-900 border-t-transparent rounded-full mr-3 hidden"
+          ></span>
+          <span id="btn-text">Enregistrer le dossier</span>
+        </div>
+      </button>
+    </div>
+
+    <div
+      id="duplicate-modal"
+      class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"
+    >
+      <div
+        class="relative bg-white/95 w-11/12 max-w-sm rounded-3xl p-6 shadow-2xl border border-yellow-400/30 transform scale-95 transition-transform duration-300"
+        id="modal-content"
+      >
+        <div
+          class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-yellow-50 to-transparent rounded-t-3xl -z-10"
+        ></div>
+
+        <div class="text-center mb-6">
+          <div
+            class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-yellow-100 text-3xl shadow-sm border border-yellow-200 mb-3"
+          >
+            ⚠️
+          </div>
+          <h3 class="text-xl font-black text-gray-900 tracking-tight">
+            Attention !
+          </h3>
+          <p class="text-sm font-medium text-gray-500 mt-1">
+            Ce nom ressemble à des dossiers existants.
+          </p>
+        </div>
+
+        <div
+          id="duplicate-list"
+          class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-1"
+        ></div>
+
+        <div class="space-y-3">
+          <button
+            onclick="closeModal()"
+            class="w-full py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold text-sm transition-colors"
+          >
+            Non, c'est une nouvelle personne
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- affichage ID -->
+    <div
+      id="success-modal"
+      class="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"
+    >
+      <div
+        class="relative bg-white w-11/12 max-w-sm rounded-3xl p-6 shadow-2xl border-2 border-green-400 transform scale-95 transition-transform duration-300 text-center"
+      >
+        <div
+          class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 text-5xl shadow-sm border-4 border-white -mt-16 mb-4 relative z-10"
+        >
+          🎉
+        </div>
+
+        <h3 class="text-2xl font-black text-gray-900 tracking-tight mb-2">
+          Inscription Réussie !
+        </h3>
+        <p class="text-gray-500 font-medium text-sm mb-6">
+          Le dossier a été créé avec succès.
+        </p>
+
+        <div
+          class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 relative overflow-hidden group"
+        >
+          <div
+            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-300 to-orange-400"
+          ></div>
+          <p
+            class="text-xs font-bold text-yellow-700 uppercase tracking-widest mb-1"
+          >
+            ID ÉLÈVE
+          </p>
+          <div
+            id="generated-id"
+            class="text-3xl font-mono font-black text-gray-900 tracking-wider"
+          ></div>
+        </div>
+
+        <button
+          onclick="closeSuccessModal()"
+          class="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-green-200 transition-all active:scale-95"
+        >
+          Génial, merci !
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      tg.ready();
+      tg.setHeaderColor("#F9FAFB");
+
+      // --- FONCTION CHECK DOUBLON ANTI-BLOCAGE ---
+      async function checkDuplicates() {
+        const nom = document.getElementById("nomComplet").value;
+        const tel = document.getElementById("telephone").value;
+
+        const btn = document.getElementById("btn-check");
+        const btnText = document.getElementById("check-text");
+        let btnIcon = document.getElementById("check-icon");
+
+        // 1. Validation
+        if (!nom) {
+          if (tg.HapticFeedback)
+            tg.HapticFeedback.notificationOccurred("error");
+          const oldText = btnText.innerText;
+          btnText.innerText = "⚠️ Nom manquant !";
+          setTimeout(() => (btnText.innerText = oldText), 2000);
+          return;
+        }
+
+        // 2. UI Loading
+        const originalClass = btn.className;
+        const originalText = "Vérifier les doublons"; // Texte fixe pour éviter les bugs
+
+        btnText.innerText = "Recherche...";
+        if (btnIcon) btnIcon.innerText = "⏳";
+
+        btn.disabled = true;
+
+        try {
+          // --- TIMEOUT DE SÉCURITÉ ---
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          const response = await fetch("/api/check-duplicates", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Telegram-Data": tg.initData || "",
+            },
+            body: JSON.stringify({ nomComplet: nom, telephone: tel }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`Erreur Server ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          // 3. ANALYSE DU RÉSULTAT
+          if (
+            result.found &&
+            result.candidates &&
+            result.candidates.length > 0
+          ) {
+            // DOUBLON TROUVÉ
+            if (tg.HapticFeedback)
+              tg.HapticFeedback.notificationOccurred("warning");
+
+            resetBtn(btn, btnText, btnIcon, originalClass, originalText);
+
+            showDuplicateModal(result.candidates);
+          } else {
+            // PAS DE DOUBLON (Succès)
+            if (tg.HapticFeedback)
+              tg.HapticFeedback.notificationOccurred("success");
+
+            btn.className =
+              "w-full flex justify-center items-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all bg-green-100 text-green-700 border border-green-300";
+            btnText.innerText = "✅ C'est tout bon !";
+            if (btnIcon) btnIcon.innerText = "";
+
+            setTimeout(() => {
+              resetBtn(btn, btnText, btnIcon, originalClass, originalText);
+            }, 2500);
+          }
+        } catch (error) {
+          console.error("Erreur Check:", error);
+          if (tg.HapticFeedback)
+            tg.HapticFeedback.notificationOccurred("error");
+
+          btn.className =
+            "w-full flex justify-center items-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all bg-red-100 text-red-700 border border-red-300";
+
+          if (error.name === "AbortError") {
+            btnText.innerText = "⏳ Trop long (Timeout)";
+          } else {
+            btnText.innerText = "❌ Erreur Serveur";
+          }
+
+          setTimeout(() => {
+            resetBtn(btn, btnText, btnIcon, originalClass, originalText);
+          }, 3000);
+        } finally {
+          // --- SÉCURITÉ ABSOLUE ---
+          btn.disabled = false;
+        }
+      }
+
+      function resetBtn(btn, txtSpan, iconSpan, css, txt) {
+        btn.className = css;
+        txtSpan.innerText = txt;
+        if (iconSpan) iconSpan.innerText = "🔍";
+      }
+
+      function showDuplicateModal(candidates) {
+        const modal = document.getElementById("duplicate-modal");
+        const list = document.getElementById("duplicate-list");
+        const content = document.getElementById("modal-content");
+
+        if (!modal || !list) return;
+
+        list.innerHTML = "";
+
+        candidates.forEach((s) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "w-full relative flex items-center justify-between p-4 rounded-2xl bg-yellow-50 border border-yellow-200 hover:bg-yellow-100 transition-all active:scale-[0.98] group text-left shadow-sm mb-2";
+
+          // Action au clic
+          btn.onclick = () => loadExistingStudent(s);
+
+          btn.innerHTML = `
+             <div>
+                <div class="font-bold text-gray-900 text-base group-hover:text-yellow-800 transition-colors">${s.nomComplet}</div>
+                <div class="text-xs font-medium text-yellow-600/80 mt-1 flex items-center gap-1">
+                   <span>📱 ${s.telephone || "Non renseigné"}</span>
+                </div>
+             </div>
+             <div class="h-8 w-8 rounded-full bg-white text-yellow-500 flex items-center justify-center shadow-sm border border-yellow-100 group-hover:scale-110 transition-transform">✏️</div>
+          `;
+          list.appendChild(btn);
+        });
+
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          modal.classList.remove("opacity-0");
+          content.classList.remove("scale-95");
+          content.classList.add("scale-100");
+        });
+      }
+
+      function closeModal() {
+        const modal = document.getElementById("duplicate-modal");
+        modal.classList.add("opacity-0");
+        setTimeout(() => modal.classList.add("hidden"), 300);
+      }
+
+      function loadExistingStudent(student) {
+        closeModal();
+        if (document.getElementById("nomComplet"))
+          document.getElementById("nomComplet").value =
+            student.nomComplet || "";
+        if (document.getElementById("telephone"))
+          document.getElementById("telephone").value = student.telephone || "";
+        if (document.getElementById("dateNaissance"))
+          document.getElementById("dateNaissance").value =
+            student.dateNaissance || "";
+        if (document.getElementById("adresse"))
+          document.getElementById("adresse").value = student.adresse || "";
+        if (document.getElementById("eglise"))
+          document.getElementById("eglise").value = student.eglise || "";
+        if (document.getElementById("profession"))
+          document.getElementById("profession").value =
+            student.profession || "";
+        if (document.getElementById("idApp"))
+          document.getElementById("idApp").value = student.idApp || "";
+        if (document.getElementById("nomTree"))
+          document.getElementById("nomTree").value = student.nomTree || "";
+        if (document.getElementById("telTree"))
+          document.getElementById("telTree").value = student.telTree || "";
+        if (document.getElementById("liaison"))
+          document.getElementById("liaison").value = student.liaison || "";
+        if (document.getElementById("departement"))
+          document.getElementById("departement").value =
+            student.departement || "";
+
+        if (student.option) {
+          const index = student.option === "Weekend" ? 1 : 0;
+          selectOption(student.option, index);
+        }
+
+        if (tg.HapticFeedback)
+          tg.HapticFeedback.notificationOccurred("success");
+        tg.showAlert(`📂 Profil chargé : ${student.nomComplet}`);
+
+        const btnText = document.getElementById("btn-text");
+        if (btnText) btnText.innerText = "Mettre à jour le dossier";
+      }
+
+      function selectOption(value, index) {
+        if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        document.getElementById("optionSelected").value = value;
+        document.getElementById("capsule-bg").style.transform =
+          `translateX(${index * 100}%)`;
+        const btn0 = document.getElementById("btn-0");
+        const btn1 = document.getElementById("btn-1");
+
+        // Reset styles
+        btn0.className =
+          "flex-1 py-3 text-sm font-bold z-10 transition-colors text-gray-500";
+        btn1.className =
+          "flex-1 py-3 text-sm font-bold z-10 transition-colors text-gray-500";
+
+        if (index === 0) {
+          btn0.classList.remove("text-gray-500");
+          btn0.classList.add("text-yellow-900");
+        } else {
+          btn1.classList.remove("text-gray-500");
+          btn1.classList.add("text-yellow-900");
+        }
+      }
+
+      function clearError() {
+        const input = document.getElementById("nomComplet");
+        input.classList.remove("border-red-500", "bg-red-50");
+        input.classList.add("border-gray-200");
+      }
+
+      function triggerConfetti() {
+        var duration = 3000;
+        var end = Date.now() + duration;
+        var colors = ["#facc15", "#fde047", "#ffffff", "#000000"];
+        (function frame() {
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: colors,
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: colors,
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      }
+
+      // --- Affichage ID script ---
+      function showSuccessModal(id) {
+        const modal = document.getElementById("success-modal");
+        const idSpan = document.getElementById("generated-id");
+
+        idSpan.innerText = id;
+
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          modal.classList.remove("opacity-0");
+          const content = modal.querySelector("div");
+          content.classList.remove("scale-95");
+          content.classList.add("scale-100");
+        });
+
+        triggerConfetti();
+      }
+
+      function closeSuccessModal() {
+        const modal = document.getElementById("success-modal");
+        modal.classList.add("opacity-0");
+        setTimeout(() => {
+          modal.classList.add("hidden");
+          tg.close();
+        }, 300);
+      }
+
+      async function submitForm() {
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
+
+        // Validation
+        const nomInput = document.getElementById("nomComplet");
+        const nom = nomInput.value;
+        if (!nom) {
+          if (tg.HapticFeedback)
+            tg.HapticFeedback.notificationOccurred("error");
+          nomInput.classList.remove("border-gray-200");
+          nomInput.classList.add("border-red-500", "bg-red-50");
+          nomInput.focus();
+          return;
+        }
+
+        const btn = document.getElementById("main-btn");
+        const spinner = document.getElementById("spinner");
+        const btnText = document.getElementById("btn-text");
+        btn.disabled = true;
+        spinner.classList.remove("hidden");
+        btnText.innerText = "Enregistrement...";
+
+        const data = {
+          nomComplet: nom,
+          telephone: document.getElementById("telephone").value,
+          dateNaissance: document.getElementById("dateNaissance").value,
+          adresse: document.getElementById("adresse").value,
+          eglise: document.getElementById("eglise").value,
+          profession: document.getElementById("profession").value,
+          option: document.getElementById("optionSelected").value,
+          idApp: document.getElementById("idApp").value,
+          nomTree: document.getElementById("nomTree").value,
+          telTree: document.getElementById("telTree").value,
+          liaison: document.getElementById("liaison").value,
+          departement: document.getElementById("departement").value,
+        };
+
+        try {
+          const response = await fetch("/api/students", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Telegram-Data": tg.initData || "",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            if (tg.HapticFeedback)
+              tg.HapticFeedback.notificationOccurred("success");
+
+            btn.disabled = false;
+            spinner.classList.add("hidden");
+            btnText.innerText = "Enregistrer le dossier";
+
+            showSuccessModal(result.id);
+          } else {
+            throw new Error(result.message || "Erreur inconnue");
+          }
+        } catch (error) {
+          btn.disabled = false;
+          spinner.classList.add("hidden");
+          btnText.innerText = "Réessayer";
+          tg.showAlert("Erreur : " + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>
