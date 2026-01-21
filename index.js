@@ -11,7 +11,7 @@ const crypto = require("crypto");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const MONGO_URI = process.env.MONGO_URI; // Ton lien MongoDB
+const MONGO_URI = process.env.MONGO_URI;
 const WEB_APP_URL =
   process.env.RENDER_EXTERNAL_URL || "https://ton-projet.onrender.com";
 
@@ -20,39 +20,34 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- 1. CONNEXION MONGODB ---
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("✅ Base de Données Connectée (MongoDB)"))
   .catch((err) => console.error("❌ Erreur de connexion DB:", err));
 
-// --- 2. DÉFINITION DU MODÈLE (SCHEMA) ---
-// C'est la structure exacte de ton dossier élève
 const StudentSchema = new mongoose.Schema({
-  readableId: { type: String, unique: true }, // ID court pour l'affichage (ex: 839201)
+  readableId: { type: String, unique: true },
   nomComplet: { type: String, required: true },
   telephone: String,
   dateNaissance: String,
   adresse: String,
   eglise: String,
   profession: String,
-  option: String, // Journalier / Weekend
+  option: String,
 
-  // Champs Tree / Parrainage
   idApp: String,
   nomTree: String,
   telTree: String,
   liaison: String,
   departement: String,
 
-  // Métadonnées
   createdByTelegramId: Number,
   dateAjout: { type: Date, default: Date.now },
 });
 
 const Student = mongoose.model("Student", StudentSchema);
 
-// --- 3. SÉCURITÉ ---
+// --- SÉCURITÉ(auth) ---
 const verifyTelegramData = (initData) => {
   if (!initData) return false;
   const urlParams = new URLSearchParams(initData);
@@ -73,13 +68,13 @@ const verifyTelegramData = (initData) => {
   return calculatedHash === hash;
 };
 
-// --- 4. API : ENREGISTREMENT ---
+// --- API : ENREGISTREMENT ---
 app.post("/api/students", async (req, res) => {
   try {
     const telegramProof = req.header("X-Telegram-Data");
     let telegramUserId = null;
 
-    // Vérification Sécurité
+    // Sécurité
     if (telegramProof && verifyTelegramData(telegramProof)) {
       const userData = new URLSearchParams(telegramProof).get("user");
       const user = JSON.parse(userData);
@@ -89,23 +84,21 @@ app.post("/api/students", async (req, res) => {
       console.log("⚠️ Ajout hors Telegram ou non sécurisé");
     }
 
-    // Préparation des données
     const data = req.body;
 
-    // Génération d'un ID court (6 chiffres) unique
     const shortId = Math.floor(100000 + Math.random() * 900000).toString();
 
     const newStudent = new Student({
-      ...data, // On copie tous les champs du formulaire
+      ...data,
       readableId: shortId,
       createdByTelegramId: telegramUserId,
     });
 
-    // SAUVEGARDE DANS LE CLOUD ☁️
+    // SAUVEGARDE DANS LE CLOUD
     await newStudent.save();
     console.log(`📝 Élève sauvegardé en BDD : ${newStudent.nomComplet}`);
 
-    // ENVOI NOTIFICATION TELEGRAM (Si possible)
+    // ENVOI NOTIFICATION TELEGRAM
     if (BOT_TOKEN && telegramUserId) {
       try {
         const bot = new Telegraf(BOT_TOKEN);
@@ -125,24 +118,21 @@ app.post("/api/students", async (req, res) => {
   }
 });
 
-// --- 5. API : DÉTECTION DOUBLONS ---
+// --- API : CHECK DOUBLONS ---
 app.post("/api/check-duplicates", async (req, res) => {
   try {
     const { nomComplet, telephone } = req.body;
     let query = { $or: [] };
 
     if (telephone) {
-      // Recherche exacte sur le téléphone
       query.$or.push({ telephone: telephone });
     }
     if (nomComplet) {
-      // Recherche flexible sur le nom (insensible à la casse)
       query.$or.push({ nomComplet: { $regex: new RegExp(nomComplet, "i") } });
     }
 
     if (query.$or.length === 0) return res.json({ found: false });
 
-    // RECHERCHE DANS LE CLOUD ☁️
     const candidates = await Student.find(query).limit(5);
 
     res.json({ found: candidates.length > 0, candidates: candidates });
@@ -152,13 +142,10 @@ app.post("/api/check-duplicates", async (req, res) => {
   }
 });
 
-// --- API : LISTE DES ÉLÈVES (ADMIN) ---
+// --- API : LISTE DES ÉLÈVES JUSTE POUR LE TEST (admin.html)---
 app.get("/api/students", async (req, res) => {
-  // 1. Petite sécurité basique (Mot de passe dans l'URL)
-  // On attendra une requête du type : /api/students?pwd=MON_MOT_DE_PASSE
   const password = req.query.pwd;
 
-  // Remplace "Secret123" par le mot de passe de ton choix
   if (password !== "Secret123") {
     return res
       .status(403)
@@ -166,7 +153,6 @@ app.get("/api/students", async (req, res) => {
   }
 
   try {
-    // 2. On récupère tout le monde, du plus récent au plus ancien
     const allStudents = await Student.find().sort({ dateAjout: -1 });
     res.json(allStudents);
   } catch (e) {
@@ -174,7 +160,7 @@ app.get("/api/students", async (req, res) => {
   }
 });
 
-// --- 6. LE BOT (INTERFACE) ---
+// --- BOT (INTERFACE) ---
 if (BOT_TOKEN) {
   const bot = new Telegraf(BOT_TOKEN);
 

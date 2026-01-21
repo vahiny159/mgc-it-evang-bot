@@ -78,7 +78,6 @@
         if (!pwd) return alert("Entrez le mot de passe !");
 
         try {
-          // On appelle l'API avec le mot de passe
           const response = await fetch(`/api/students?pwd=${pwd}`);
 
           if (response.status === 403) {
@@ -88,15 +87,13 @@
 
           const students = await response.json();
 
-          // Si succès, on affiche le tableau
           document.getElementById("login-area").classList.add("hidden");
           document.getElementById("data-area").classList.remove("hidden");
 
           const tbody = document.getElementById("table-body");
-          tbody.innerHTML = ""; // On vide avant de remplir
+          tbody.innerHTML = "";
 
           students.forEach((s) => {
-            // Conversion date simple
             const date = new Date(s.dateAjout).toLocaleDateString("fr-FR");
 
             const row = `
