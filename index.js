@@ -152,6 +152,28 @@ app.post("/api/check-duplicates", async (req, res) => {
   }
 });
 
+// --- API : LISTE DES ÉLÈVES (ADMIN) ---
+app.get("/api/students", async (req, res) => {
+  // 1. Petite sécurité basique (Mot de passe dans l'URL)
+  // On attendra une requête du type : /api/students?pwd=MON_MOT_DE_PASSE
+  const password = req.query.pwd;
+
+  // Remplace "Secret123" par le mot de passe de ton choix
+  if (password !== "Secret123") {
+    return res
+      .status(403)
+      .json({ error: "Accès refusé. Mot de passe incorrect." });
+  }
+
+  try {
+    // 2. On récupère tout le monde, du plus récent au plus ancien
+    const allStudents = await Student.find().sort({ dateAjout: -1 });
+    res.json(allStudents);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // --- 6. LE BOT (INTERFACE) ---
 if (BOT_TOKEN) {
   const bot = new Telegraf(BOT_TOKEN);

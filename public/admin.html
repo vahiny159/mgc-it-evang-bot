@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - MGC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+          📊 Gestion des Inscriptions
+        </h1>
+        <button
+          onclick="loadData()"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow transition"
+        >
+          🔄 Actualiser
+        </button>
+      </div>
+
+      <div
+        id="login-area"
+        class="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto mt-20 text-center"
+      >
+        <h2 class="text-lg font-bold mb-4">Accès Réservé</h2>
+        <input
+          type="password"
+          id="admin-pwd"
+          placeholder="Mot de passe Admin"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full mb-3 outline-none focus:border-blue-500"
+        />
+        <button
+          onclick="loadData()"
+          class="w-full bg-gray-900 text-white py-2 rounded-lg font-bold"
+        >
+          Entrer
+        </button>
+      </div>
+
+      <div
+        id="data-area"
+        class="hidden bg-white rounded-xl shadow-md overflow-hidden border border-gray-200"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+              <tr>
+                <th class="p-4 border-b">Date</th>
+                <th class="p-4 border-b">ID</th>
+                <th class="p-4 border-b">Nom Complet</th>
+                <th class="p-4 border-b">Téléphone</th>
+                <th class="p-4 border-b">Option</th>
+                <th class="p-4 border-b">Parrain (Tree)</th>
+              </tr>
+            </thead>
+            <tbody
+              id="table-body"
+              class="text-sm text-gray-700 divide-y divide-gray-100"
+            ></tbody>
+          </table>
+        </div>
+        <div
+          id="count-display"
+          class="p-4 bg-gray-50 text-xs text-gray-500 font-bold text-right border-t"
+        >
+          0 inscrits
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function loadData() {
+        const pwdInput = document.getElementById("admin-pwd");
+        const pwd = pwdInput.value;
+
+        if (!pwd) return alert("Entrez le mot de passe !");
+
+        try {
+          // On appelle l'API avec le mot de passe
+          const response = await fetch(`/api/students?pwd=${pwd}`);
+
+          if (response.status === 403) {
+            alert("❌ Mot de passe incorrect !");
+            return;
+          }
+
+          const students = await response.json();
+
+          // Si succès, on affiche le tableau
+          document.getElementById("login-area").classList.add("hidden");
+          document.getElementById("data-area").classList.remove("hidden");
+
+          const tbody = document.getElementById("table-body");
+          tbody.innerHTML = ""; // On vide avant de remplir
+
+          students.forEach((s) => {
+            // Conversion date simple
+            const date = new Date(s.dateAjout).toLocaleDateString("fr-FR");
+
+            const row = `
+                        <tr class="hover:bg-blue-50 transition-colors">
+                            <td class="p-4">${date}</td>
+                            <td class="p-4 font-mono text-xs bg-gray-50 rounded text-gray-500">${s.readableId || "?"}</td>
+                            <td class="p-4 font-bold text-gray-900">${s.nomComplet}</td>
+                            <td class="p-4">${s.telephone || "-"}</td>
+                            <td class="p-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold ${s.option === "Weekend" ? "bg-purple-100 text-purple-700" : "bg-yellow-100 text-yellow-800"}">
+                                    ${s.option || "N/A"}
+                                </span>
+                            </td>
+                            <td class="p-4 text-xs">
+                                ${s.nomTree ? `👤 ${s.nomTree}` : '<span class="text-gray-300">Aucun</span>'}
+                            </td>
+                        </tr>
+                    `;
+            tbody.innerHTML += row;
+          });
+
+          document.getElementById("count-display").innerText =
+            `${students.length} inscrits au total`;
+        } catch (error) {
+          alert("Erreur de chargement : " + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>
